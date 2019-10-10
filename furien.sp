@@ -13,11 +13,7 @@ char g_sRadioCmds[][] = { "coverme", "takepoint", "holdpos", "regroup", "followm
  
 bool
         bg_MovedAfterSpawn[MAXPLAYERS+1] = {false,...},
-        bg_ClientInv[MAXPLAYERS+1] = {false,...},
-        bg_ClientInvPre[MAXPLAYERS+1] = {false,...};
-
-float 
-        fg_ClientInv[MAXPLAYERS+1];
+        bg_ClientInv[MAXPLAYERS+1] = {false,...}; 
 
 ConVar 
         cV_Gravity,
@@ -29,7 +25,7 @@ float
 public Plugin myinfo = {
   name = "Furien Mod",
   author = "Filiq_",
-  version = "0.0.1",
+  version = "0.0.2",
   description = "Furien cs 1.6 style for cs:go",
   url = "https://github.com/Diversity2251/Furien"
 };
@@ -50,6 +46,23 @@ public void OnPluginStart() {
 
     AddCommandListener(Command_Block, "kill");
 }
+
+public void OnMapStart() {
+    SetConVarString(FindConVar("mp_teamname_1"), "ANTI-FURIENS", true);
+    SetConVarString(FindConVar("mp_teamname_2"), "FURIENS", true);
+
+    SetConVarInt(FindConVar("mp_startmoney"), 800, true);
+    SetConVarInt(FindConVar("sv_deadtalk"), 1, true);
+    SetConVarInt(FindConVar("sv_alltalk"), 1, true);
+    SetConVarInt(FindConVar("mp_buytime"), 0, true);
+    SetConVarInt(FindConVar("sv_ignoregrenaderadio"), 1, true);
+    SetConVarInt(FindConVar("sv_disable_immunity_alpha"), 1, true);
+    SetConVarInt(FindConVar("sv_airaccelerate"), 20, true);
+    SetConVarInt(FindConVar("mp_maxrounds"), 30, true); 
+     
+    SetConVarFloat(FindConVar("mp_roundtime"), 2.5, true);
+    SetConVarFloat(FindConVar("mp_roundtime_defuse"), 2.5, true);
+} 
 
 public void OnClientPutInServer(int client) {
     if(IsValidClient(client)) {
@@ -99,16 +112,24 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
                     SetEntPropVector(client, Prop_Data, "m_VecVelocity", vel);
                     TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, vel);
                 }
-            }
+            } 
             if(IsClientNotMoving(buttons) && !IsClientInAir(client, flag) && bg_MovedAfterSpawn[client] == true && StrEqual(Weapon, "weapon_knife")) {
-                if(bg_ClientInv[client] == false) {
-                    if(bg_ClientInvPre[client] == false) {
-                        fg_ClientInv[client] = GetGameTime();
-                        bg_ClientInvPre[client] = true;
-                    }
-                    else if(bg_ClientInvPre[client] == true && bg_ClientInv[client] == false) {
-                        // inv player
-                    }
+                if(bg_ClientInv[client] == false) {   
+                    SetEntityRenderMode(client, RENDER_NONE);
+                    SetEntityRenderColor(client, 255, 255, 255, 0);
+
+                    bg_ClientInv[client] = true;
+
+                    PrintCenterText(client, "Now you are invisibile");
+                }
+            } else {
+                if(bg_ClientInv[client] == true) {
+                    SetEntityRenderMode(client, RENDER_NORMAL);
+                    SetEntityRenderColor(client, 255, 255, 255, 255); 
+
+                    bg_ClientInv[client] = false;
+
+                    PrintCenterText(client, "Now you are visibile");
                 }
             }
         }

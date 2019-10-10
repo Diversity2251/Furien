@@ -20,7 +20,7 @@
                 "-O2",
                 "-v2",
                 "-iD:\\sourcemod\\scripting",
-                "-i${workspaceFolder}\\scripting\\include",
+                "-iD:\\sourcemod\\scripting\\include",
                 "-o${workspaceFolder}\\plugins\\${fileBasenameNoExtension}.smx"
             ],
 
