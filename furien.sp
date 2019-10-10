@@ -69,10 +69,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if(IsValidClient(client, true)) {    
-        bg_ClientInv[client] = false;
-
-        SetEntityRenderMode(client, RENDER_NONE);
-        SetEntityRenderColor(client);    
+        bg_ClientInv[client] = false;    
+        
+        SetEntityRenderColor(client, 255, 255, 255, 255); 
+        SetEntityRenderMode(client, RENDER_NORMAL);
         StripWeapons(client);
         GivePlayerItem(client, "weapon_knife");
 
