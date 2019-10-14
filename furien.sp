@@ -21,15 +21,20 @@ float
         cVf_Gravity,
         cVf_Speed;
 
+int 
+        cash;
+
 public Plugin myinfo = {
   name = "Furien Mod",
   author = "Filiq_",
-  version = "0.0.2",
+  version = "0.0.2a",
   description = "Furien cs 1.6 style for cs:go",
   url = "https://github.com/Diversity2251/Furien"
 };
 
 public void OnPluginStart() {
+
+    RegConsoleCmd("sm_shop", CMD_SHOP, "Shop");
 
     HookEvent("player_spawn", Event_PlayerSpawn);
 
@@ -46,6 +51,8 @@ public void OnPluginStart() {
         AddCommandListener(Command_Block, g_sRadioCmds[i]); 
 
     AddCommandListener(Command_Block, "kill");
+
+    cash = FindSendPropInfo("CCSPlayer", "m_iAccount");
 }
 
 public void OnMapStart() {
@@ -64,6 +71,36 @@ public void OnMapStart() {
     SetConVarFloat(FindConVar("mp_roundtime"), 2.5, true);
     SetConVarFloat(FindConVar("mp_roundtime_defuse"), 2.5, true);
 } 
+
+public Action CMD_SHOP(int client, int args) {
+    if(!IsValidClient(client, true)) 
+        return Plugin_Handled; 
+
+    Menu shop = new Menu(MenuShop_Handler);
+
+    switch(GetClientTeam(client)) {
+        case CS_TEAM_T: {
+            SetMenuTitle(shop, "Furien Shop: %d", GetClientMoney(client)); 
+            shop.AddItem("SK", "SuperKnife | $10.000");
+        }
+        case CS_TEAM_CT: {
+            SetMenuTitle(shop, "Anti-Furien Shop: %d", GetClientMoney(client)); 
+            shop.AddItem("DEF", "Defuse Kit | $500");
+        }
+    } 
+     
+    shop.AddItem("HEG", "He Grenade | $3.000");
+    shop.AddItem("HP", "50 HP | $3.000");
+    shop.AddItem("AP", "50 AP + HELMET | $500");
+
+    shop.Display(client, 0);
+
+    return Plugin_Continue;
+}
+
+public int MenuShop_Handler(Menu menu, MenuAction action, int client, int item) {
+
+}
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
     int client = GetClientOfUserId(event.GetInt("userid"));
@@ -199,4 +236,11 @@ stock void StripWeapons(int client)
 			RemoveEdict(wepIdx);
 		}
 	}
+}
+
+stock void SetClientMoney(int client, int money) {
+    SetEntData(client, cash, money); 
+}
+stock int GetClientMoney(int client) {
+    return GetEntData(client, cash); 
 }
